@@ -1,0 +1,7 @@
+:OpenPath - find and open path in curent line
+
+setup entries - object, where key is entry regex and value is replace regex
+
+example
+
+`let g:aliapath_entries = {'^utils\(.*\)$': './apps/utils\1.js'}`
