@@ -1,7 +1,4 @@
-let s:defaultConfig = {'^\(.*\)$': '\1.js'}
-let g:aliapath_entries ={}
-
-let g:aliapath_entries = {'^utils\(.*\)$': './apps/utils\1.js'}
+let g:aliapath_entries = {'^\(.*\)$': '\1.js'}
 
 function OpenPath ()
   let filename = expand('%:e') 
@@ -13,14 +10,11 @@ function OpenPath ()
   normal! "zy
 
   let filepath = @z
-  let config = extend(g:aliapath_entries, s:defaultConfig)
 
-  for conf in items(config)
+  for conf in items(g:aliapath_entries)
     if matchstr(filepath, conf[0]) != ""
       let path = substitute(filepath, conf[0], conf[1], "g")
       if filereadable(path)
-      " normal! e path
-        echo path
         execute "e " . fnameescape(path)
         return
       endif
