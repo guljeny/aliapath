@@ -2,7 +2,7 @@
 
 ## install
 
-`Plug 'guljeny/aliapath'`
+`Plug 'guljeny/jsaliapath'`
 
 ## Usage
 
