@@ -13,13 +13,16 @@ function OpenPath ()
   endif
   let src = split(path, "/")
   let name = remove(src, len(src) - 1)
-  let src = join(src, "/") . "/"
+  let src = join(src, '/**/').'/**/'
   let file = findfile(name, dir.'/**/'.src)
+  if len(file) == 0
+    let file = findfile('index', dir.'/**/'.src.name)
+  endif
   if len(file) == 0
     return
   endif
   if filereadable(file)
-    execute "e " . fnameescape(path)
+    execute "e " . fnameescape(file)
   endif
 endfunction
 
