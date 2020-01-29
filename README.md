@@ -4,7 +4,7 @@ Help you to fast open aliases and relative file paths
 
 ![Prewiew](/demo/demo.gif)
 
-**serch aliases from vim startup directory**
+**search aliases from vim startup directory**
 
 ## Install
 
