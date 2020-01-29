@@ -2,6 +2,7 @@ let g:aliapath_entries = {'^\(.*\)$': '\1.js'}
 
 function OpenPath ()
   let filename = expand('%:e') 
+  let dir = getcwd()
   if filename != 'js'
     return
   endif
@@ -13,7 +14,10 @@ function OpenPath ()
   let src = split(path, "/")
   let name = remove(src, len(src) - 1)
   let src = join(src, "/") . "/"
-  let file = findfile(name, src)
+  let file = findfile(name, dir.'/**/'.src)
+  if len(file) == 0
+    return
+  endif
   if filereadable(file)
     execute "e " . fnameescape(path)
   endif
