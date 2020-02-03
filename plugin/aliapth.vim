@@ -11,7 +11,7 @@ function OpenPath ()
   endif
   let src = split(path, "/")
   let name = remove(src, len(src) - 1)
-  if path == '^\.'
+  if path =~ '^\.'
     let src = join(src, "/")."/"
     let file = findfile(name, src)
     if len(file) == 0
