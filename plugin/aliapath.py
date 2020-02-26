@@ -1,5 +1,3 @@
-function! OpenPath ()
-python3 << EOF
 import vim
 import re
 import os
@@ -64,8 +62,3 @@ def open():
   find(initial_path)
 
 open()
-
-EOF
-endfunction
-
-command! OpenPath call OpenPath()
