@@ -8,31 +8,41 @@ file_path = vim.current.buffer.name.split('/')
 file_path.pop(-1)
 file_path = '/'.join(file_path)
 
-wrong_sym_pattern = re.compile('^(\w|\.|\/)')
-relative_path_pattern = re.compile('^(\.|\/)')
+available_first_sym_pattern = re.compile('^(\w|\.|\/)')
+relative_path_pattern = re.compile('\.')
+absolute_path_pattern = re.compile('\/')
+back_path_pattern = re.compile(r'\w+\/\.\.\/')
+
+def remove_back_dir(pth):
+    if back_path_pattern.search(pth):
+        return remove_back_dir(re.sub(back_path_pattern, '', pth))
+    else:
+        return pth
 
 def prepare_path(path):
-    if not wrong_sym_pattern.match(path):
+    # remove first sym if not a letter/dot/slash
+    if not available_first_sym_pattern.match(path):
         path = path[1:]
-    path = re.sub('\/\*\*\/', '/', path)
-    path = re.sub(r'(.+)/.\/', r'\g<1>/', path)
     return path
+
+def clean_path(path):
+    path = re.sub('\/\*\*\/', '/', path) # replace /**/ with /
+    path = re.sub('\/+', '/', path) # replace // with /
+    path = remove_back_dir(path) # remove **/../ (back path)
+    return path
+
+def try_to_open(path):
+    if os.path.isdir(path):
+        return glob.glob(path + '/index.*')
+    elif os.path.isfile(path):
+        return glob.glob(path)
+    else:
+        return glob.glob(path + '.*')
 
 def find(_path):
     path = prepare_path(_path)
     paths = path.split('/')
     finded_files = []
-
-    def find_relative():
-        file_name = paths.pop(-1)
-        path = '/'.join(paths)
-        if path[0] == '.':
-            path = re.sub('\.', file_path, path)
-        print(path + '/' + file_name)
-        if os.path.isdir(path + '/' + file_name):
-            return glob.glob(path + '/' + file_name + '/index.*')
-        else:
-            return glob.glob(path + '/' + file_name + '.*')
 
     def find_alas():
         path = startup_path + '/**/' + '/**/'.join(paths)
@@ -44,7 +54,9 @@ def find(_path):
         return []
 
     if relative_path_pattern.match(path):
-        finded_files = find_relative()
+        finded_files = try_to_open(clean_path(file_path + '/' + path))
+    elif  absolute_path_pattern.match(path):
+        finded_files = try_to_open(path)
     else:
         finded_files = find_alas()
 
@@ -54,11 +66,11 @@ def find(_path):
         print('dont find file ' + _path)
 
 def open():
-  str = re.findall("['|\"].*['|\"]", vim.current.line)
-  if not str:
-    print('not find path')
-    return
-  initial_path = prepare_path(re.sub(r"['|\"]", '', str[0]))
-  find(initial_path)
+    str = re.findall("['|\"].*['|\"]", vim.current.line)
+    if not str:
+        print('not find path')
+        return
+    initial_path = re.sub(r"['|\"]", '', str[0])
+    find(initial_path)
 
 open()
